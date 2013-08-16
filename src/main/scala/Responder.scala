@@ -15,9 +15,17 @@ object Responder {
   def pathResponse(params: Params): String =
     run(new Path(_), params)
 
-  def run[T <: TauPWrapper](tauPFactory: String => T, params: Params): String = {
+  def withTauPWrapper[T <: TauPWrapper](tp: T, f: T => String): String = {
+    // similar to the loan pattern, but specific to a close() method (not a separate resource)
+    tp.open()
+    try {
+      f(tp)
+    } finally {
+      tp.close()
+    }
+  }
 
-    var resp: String = ""
+  def run[T <: TauPWrapper](tauPFactory: String => T, params: Params): String = {
 
     val model: String = params.getOrElse("model","iasp91")
 
@@ -47,15 +55,7 @@ object Responder {
           throw new IllegalArgumentException("No valid phase supplied - " ++ e.getMessage)
       }
 
-    // ensure stop() is always called
-    tp.start()
-    try {
-      resp = tp.calculate(phase, depth, distance)
-    } finally {
-      tp.stop()
-    }
-
-    resp
+    withTauPWrapper(tp, (_: T).calculate(phase, depth, distance))
   }
 }
 

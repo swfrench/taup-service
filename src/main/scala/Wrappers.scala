@@ -28,25 +28,24 @@ object Util {
  */
 trait TauPWrapper {
 
-  var inPipe: PipedInputStream = _
-  var outPipe: PipedOutputStream = _
-  var printWriter: PrintWriter = _
+  var inPipe: PipedInputStream = null
+  var outPipe: PipedOutputStream = null
+  var printWriter: PrintWriter = null
 
-  // left abstract - all supported tools subclass TauP_Time
+  // left abstract (all supported tools subclass TauP_Time)
   val tauP: TauP_Time
 
   // default buffer size for inPipe (1MB)
   val pipeSize: Int = 2 << 19
 
-  def start() = {
+  def open() = {
     // initialize java.io objs for communication w/ TauP_* objs
-    inPipe = new PipedInputStream(pipeSize)
     outPipe = new PipedOutputStream()
     printWriter = new PrintWriter(outPipe)
-    inPipe.connect(outPipe)
+    inPipe = new PipedInputStream(outPipe, pipeSize)
   }
 
-  def stop() = {
+  def close() = {
     // free resources assocated with java.io objs
     inPipe.close()
     outPipe.close()

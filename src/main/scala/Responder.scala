@@ -47,9 +47,13 @@ object Responder {
           throw new IllegalArgumentException("No valid phase supplied - " ++ e.getMessage)
       }
 
-    tp.start
-    resp = tp.calculate(phase, depth, distance)
-    tp.stop
+    // ensure stop() is always called
+    tp.start()
+    try {
+      resp = tp.calculate(phase, depth, distance)
+    } finally {
+      tp.stop()
+    }
 
     resp
   }

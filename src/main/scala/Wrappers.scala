@@ -38,7 +38,7 @@ trait TauPWrapper {
   // default buffer size for inPipe (1MB)
   val pipeSize: Int = 2 << 19
 
-  def start = {
+  def start() = {
     // initialize java.io objs for communication w/ TauP_* objs
     inPipe = new PipedInputStream(pipeSize)
     outPipe = new PipedOutputStream()
@@ -46,7 +46,7 @@ trait TauPWrapper {
     inPipe.connect(outPipe)
   }
 
-  def stop = {
+  def stop() = {
     // free resources assocated with java.io objs
     inPipe.close()
     outPipe.close()

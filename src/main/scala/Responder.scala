@@ -35,24 +35,30 @@ object Responder {
       try {
         params("depth").toDouble
       } catch {
-        case e: Exception =>
-          throw new IllegalArgumentException("No valid depth supplied - " ++ e.getMessage)
+        case _: NoSuchElementException =>
+          throw new NoSuchElementException("Missing depth parameter")
+        case _: NumberFormatException =>
+          throw new NumberFormatException("Bad depth parameter \"%s\""
+            .format(params("depth")))
       }
 
     val distance: Double =
       try {
         params("distance").toDouble
       } catch {
-        case e: Exception =>
-          throw new IllegalArgumentException("No valid distance supplied - " ++ e.getMessage)
+        case _: NoSuchElementException =>
+          throw new NoSuchElementException("Missing distance parameter")
+        case _: NumberFormatException =>
+          throw new NumberFormatException("Bad distance parameter \"%s\""
+            .format(params("distance")))
       }
 
     val phase: String =
       try {
         params("phase")
       } catch {
-        case e: Exception =>
-          throw new IllegalArgumentException("No valid phase supplied - " ++ e.getMessage)
+        case _: NoSuchElementException =>
+          throw new NoSuchElementException("Missing phase parameter")
       }
 
     withTauPWrapper(tp, (_: T).calculate(phase, depth, distance))

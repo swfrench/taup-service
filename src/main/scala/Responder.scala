@@ -61,7 +61,10 @@ object Responder {
           throw new NoSuchElementException("Missing phase parameter")
       }
 
-    withTauPWrapper(tp, (_: T).calculate(phase, depth, distance))
+    if (phase.contains(","))
+      withTauPWrapper(tp, (_: T).calculate(phase.split(",").toList, depth, distance))
+    else
+      withTauPWrapper(tp, (_: T).calculate(phase, depth, distance))
   }
 }
 
